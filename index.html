@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Symulator Wahadła</title>
+  </head>
+  <body>
+    <canvas id="canvas" width="800" height="800"></canvas>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Właściwości wahadła
+        let Dlugoscwahadla = 400; // Długosć wahadła
+        let Kat = Math.PI / 4; // Początkowy kąt (45)
+        const Przyspieszenie = 9.81; // Przyspieszenie grawitacyjne
+        let Predkosckatowa = 0; // Początkowa prędkość kątowa
+        let Start, PreviousTimestamp;
+
+        // Rysowanie wahadła
+        const pivotX = canvas.width / 2;
+        const pivotY = 50;
+
+        const draw = (timestamp) => {
+          // Timing
+          if (!Start) Start = timestamp;
+          if (!PreviousTimestamp) PreviousTimestamp = timestamp;
+          const deltaTime = timestamp - PreviousTimestamp;
+          PreviousTimestamp = timestamp;
+          const s = deltaTime / 1000;
+
+          const PunktX = pivotX + Dlugoscwahadla * Math.sin(Kat);
+          const PunktY = pivotY + Dlugoscwahadla * Math.cos(Kat);
+
+          const ballX2 = PunktX + Dlugoscwahadla * Math.sin(Kat);
+          const ballY2 = PunktY + Dlugoscwahadla * Math.cos(Kat);
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.beginPath();
+          ctx.moveTo(pivotX, pivotY);
+          ctx.lineTo(PunktX, PunktY);
+          ctx.arc(PunktX, PunktY, 20, 0, 2 * Math.PI);
+          ctx.stroke();
+
+          // Aktualizacja kąta i prędkości kątowej
+          let ruch = Przyspieszenie * s * Math.sin(Kat);
+          Predkosckatowa += (-1 * ruch) / Dlugoscwahadla;
+          Kat += Predkosckatowa;
+
+
+          window.requestAnimationFrame(draw);
+        };
+
+       window.requestAnimationFrame(draw);
+      });
+    </script>
+  </body>
+</html>
